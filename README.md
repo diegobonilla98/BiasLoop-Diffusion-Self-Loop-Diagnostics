@@ -160,3 +160,6 @@ python visualize_trajectories.py
 python trajectory_similarity.py
 python build_readme_assets.py
 ```
+
+# Requirements
+At least >40Gb VRAM. I used 1 x H100 GPU. Takes like 1h to process everything with the 11 input images. Like 4 bucks on Lightning.ai (not an ad).
