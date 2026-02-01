@@ -10,9 +10,8 @@ This repo diagnoses and amplifies diffusion model biases by creating a self-loop
 
 ## Visual Overview
 
-Self-loop snapshots from step 0 to N (FLUX, strength 0.25 and 0.5):
+Self-loop snapshots showing 4 image examples across timesteps 0, 5, 10, 25 (FLUX, strength 0.5):
 
-![Trajectory steps s=0.25](readme_assets/trajectory_steps_00_s025.png)
 ![Trajectory steps s=0.5](readme_assets/trajectory_steps_00_s05.png)
 
 Global trajectory maps (all images, UMAP 2D):

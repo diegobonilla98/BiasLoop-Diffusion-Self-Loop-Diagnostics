@@ -28,34 +28,33 @@ def copy_image(src, dst_name):
     shutil.copy2(src, output_dir / dst_name)
 
 
-def build_step_grid(step_paths, out_path, thumb_size=(256, 256), cols=4, padding=10, bg=(18, 18, 18)):
-    images = [Image.open(p).convert("RGB").resize(thumb_size, Image.LANCZOS) for p in step_paths]
-    rows = (len(images) + cols - 1) // cols
-    w = cols * thumb_size[0] + (cols - 1) * padding
-    h = rows * thumb_size[1] + (rows - 1) * padding
+def build_multi_image_grid(image_ids, strength_str, timesteps, out_path, thumb_size=(256, 256), padding=10, bg=(18, 18, 18)):
+    num_images = len(image_ids)
+    num_timesteps = len(timesteps)
+    
+    w = num_timesteps * thumb_size[0] + (num_timesteps - 1) * padding
+    h = num_images * thumb_size[1] + (num_images - 1) * padding
     canvas = Image.new("RGB", (w, h), bg)
-    for idx, img in enumerate(images):
-        r = idx // cols
-        c = idx % cols
-        x = c * (thumb_size[0] + padding)
-        y = r * (thumb_size[1] + padding)
-        canvas.paste(img, (x, y))
+    
+    for img_idx, image_id in enumerate(image_ids):
+        base = steps_root / image_id / f"strength_{strength_str}"
+        for ts_idx, timestep in enumerate(timesteps):
+            img_path = base / f"step_{timestep:03d}.png"
+            if img_path.exists():
+                img = Image.open(img_path).convert("RGB").resize(thumb_size, Image.LANCZOS)
+                x = ts_idx * (thumb_size[0] + padding)
+                y = img_idx * (thumb_size[1] + padding)
+                canvas.paste(img, (x, y))
+    
     canvas.save(out_path)
-
-
-def step_paths_for(image_id, strength_str, steps):
-    base = steps_root / image_id / f"strength_{strength_str}"
-    return [base / f"step_{s:03d}.png" for s in steps]
 
 
 for src, dst_name in copy_items:
     copy_image(src, dst_name)
 
-steps = [0, 1, 2, 5, 10, 15, 20, 25]
-grid_a = step_paths_for("00", "0.25", steps)
-grid_b = step_paths_for("00", "0.5", steps)
+image_examples = ["00", "01", "02", "03"]
+timesteps = [0, 5, 10, 25]
 
-build_step_grid(grid_a, output_dir / "trajectory_steps_00_s025.png")
-build_step_grid(grid_b, output_dir / "trajectory_steps_00_s05.png")
+build_multi_image_grid(image_examples, "0.5", timesteps, output_dir / "trajectory_steps_00_s05.png")
 
 print(f"Saved README assets to {output_dir}")
